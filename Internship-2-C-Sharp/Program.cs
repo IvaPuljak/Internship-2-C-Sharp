@@ -29,15 +29,23 @@ var players = new Dictionary<string, (string position, int rating)>()
     { "Ante Budimir", ("FW", 78) }
 
 };
-var teams = new Dictionary<string, int>()
+var games = new List<Dictionary<string, int>>()
 {
-
+     new Dictionary<string, int>()
+     {
     {"Hrvatska", 0},
     {"Belgija", 0 },
     {"Kanada", 0 },
-    {"Maroko", 0 }
+    {"Maroko", 0 } },
+     new Dictionary<string, int>()
+     {
+    {"Hrvatska", 0},
+    {"Kanada", 0 },
+    {"Belgija", 0 },
+    {"Maroko", 0 } }
+
 };
-var theFirstEleven = new Dictionary<string, int>();
+var theFirstElevenTotal = new Dictionary<string, int>();
 int numGK = 1;
 int numMF = 3;
 int numFW = 3;
@@ -48,7 +56,7 @@ int numDF = 4;
         
         if (Equals(item.Value.position, "GK") == true)
         {
-            theFirstEleven.Add(item.Key, 0);
+            theFirstElevenTotal.Add(item.Key, 0);
             numGK--;
         }
         if (numGK == 0)
@@ -59,7 +67,7 @@ int numDF = 4;
 
         if (Equals(item.Value.position, "DF") == true)
         {
-            theFirstEleven.Add(item.Key, 0);
+            theFirstElevenTotal.Add(item.Key, 0);
             numDF--;
         }
         if (numDF == 0)
@@ -71,7 +79,7 @@ int numDF = 4;
 
         if (Equals(item.Value.position, "MF") == true)
         {
-            theFirstEleven.Add(item.Key,0);
+            theFirstElevenTotal.Add(item.Key,0);
             numMF--;
         }
         if (numMF == 0)
@@ -83,7 +91,7 @@ int numDF = 4;
 
         if (Equals(item.Value.position, "FW") == true)
         {
-            theFirstEleven.Add(item.Key, 0);
+            theFirstElevenTotal.Add(item.Key, 0);
             numFW--;
         }
         if (numFW == 0)
@@ -190,14 +198,14 @@ do
             Console.Clear();
             Console.WriteLine("     ~ODIGRAJ UTAKMICU~    ");
             
-            if(theFirstEleven.Count()<11)
+            if(theFirstElevenTotal.Count()<11)
                 Console.WriteLine("\nNema dovoljno igrača za odigrati utakmicu!");
             else
             {
                 Console.Clear();
                 Console.WriteLine("");
                 Console.WriteLine("     ~POSTAVA~    ");
-                foreach(var item in theFirstEleven)
+                foreach(var item in theFirstElevenTotal)
                     Console.WriteLine(item.Key);
             }
             Console.WriteLine("");
@@ -220,7 +228,7 @@ do
                 command = 17;
                 continue;
             }
-            switch(command)
+            switch (command)
             {
                 case 0:
                     Console.WriteLine("Izasli ste iz aplaikacije");
@@ -229,51 +237,125 @@ do
                     Console.Clear();
                     break;
                 case 2:
+
                     int k = 0;
                     Console.Clear();
-                    Console.WriteLine($"     ~ {k+1}. utakmica ~   ");
-                    foreach (var item in teams)
-                    {
-                        Random goals = new Random();
-                        int goalsInt = goals.Next(0, 10);
-                        teams[item.Key] = goalsInt;
-                        
-                        if (item.Key == "Hrvatska")
+                    do { 
+                        Console.WriteLine($"     ~ {k + 1}. utakmica ~   ");
+                        var teams = games.ElementAt(k);
+                        foreach (var item in teams)
                         {
-                            var listOf11 = new List<string>(theFirstEleven.Keys);
 
-                            while (goalsInt > 0)
+
+                            Random goals = new Random();
+                            int goalsInt = goals.Next(0, 10);
+                            teams[item.Key] = goalsInt;
+
+                            if (item.Key == "Hrvatska")
                             {
-                                Console.WriteLine(goalsInt);
-                                Random goal = new Random();
-                                int golovi = goal.Next(1, goalsInt);
-                                Console.WriteLine(golovi);
-                                Random rand = new Random();
-                                string randomKey = listOf11[rand.Next(listOf11.Count)];
-                                Console.WriteLine(randomKey);
-                                listOf11.Remove(randomKey);
-                                theFirstEleven.Remove(randomKey);
-                                theFirstEleven.Add(randomKey, golovi);
-                                goalsInt -= golovi;
-                            } 
+                                var theFirstEleven = new Dictionary<string, int>()
+                            {
+                                { "Luka Modrić", 0 },
+                                { "Marcelo Brozović",  0},
+                                { "Mateo Kovačić", 0 },
+                                { "Andrej Kramarić",0  },
+                                { "Joško Gvardiol", 0 },
+                                { "Dominik Livaković",0  },
+                                { "Ante Rebić", 0 },
+                                { "Borna Sosa", 0 },
+                                { "Duje Ćaleta-Car", 0 },
+                                { "Dejan Lovren", 0 },
+                                { "Ante Budimir",0 }
 
-                          
+
+
+                            };
+                                var listOf11 = new List<string>(theFirstEleven.Keys);
+
+                                while (goalsInt > 0)
+                                {
+                                    Console.WriteLine(goalsInt);
+                                    Random goal = new Random();
+                                    int golovi = goal.Next(1, goalsInt);
+                                    Console.WriteLine(golovi);
+                                    Random rand = new Random();
+                                    string randomKey = listOf11[rand.Next(listOf11.Count)];
+                                    Console.WriteLine(randomKey);
+                                    listOf11.Remove(randomKey);
+                                    theFirstEleven.Remove(randomKey);
+                                    theFirstEleven.Add(randomKey, golovi);
+                                    theFirstElevenTotal[randomKey] = theFirstElevenTotal[randomKey] + golovi;
+                                    foreach (var item2 in players)
+                                    {
+                                        if (item2.Key == randomKey)
+                                            players[item2.Key] = (item2.Value.position, item2.Value.rating + 5);
+                                    }
+                                    goalsInt -= golovi;
+                                }
+
+
+                            }
+
+
+                        }
+                        Console.WriteLine($"\nRezultat {k + 1}. utakmice:");
+                        var teamsKeys = new List<string>(teams.Keys);
+                        for (var i = 1; i < teams.Count(); i += 2)
+                        {
+                            var key1 = teamsKeys.ElementAt(i - 1);
+                            var key2 = teamsKeys.ElementAt(i);
+                            Console.WriteLine($"{key1} - {key2} -> {teams[key1]} - {teams[key2]}");
+                            if (key1 == "Hrvatska" && teams[key1] > teams[key2])
+                            {
+                                foreach (var item in players)
+                                    players[item.Key] = (item.Value.position, item.Value.rating + 2);
+                            }
+                            else if (key1 == "Hrvatska" && teams[key1] < teams[key2])
+                            {
+                                foreach (var item in players)
+                                    players[item.Key] = (item.Value.position, item.Value.rating - 2);
+                            }
                         }
 
+                        Console.WriteLine("2 - odigrati još jednu utakmicu");
+                        Console.WriteLine("1 - vrati se na izbornik");
+                        Console.WriteLine("0 - izađi iz aplikacije");
 
-                    }
-                    Console.WriteLine($"\nRezultat {k+1}. utakmice:");
-                    var teamsKeys = new List<string>(teams.Keys);
-                    for (var i = 1; i <teams.Count(); i+=2)
-                    {
-                        var key1 = teamsKeys.ElementAt(i - 1);
-                        var key2 = teamsKeys.ElementAt(i);
-                        Console.WriteLine($"{key1} - {key2} -> {teams[key1]} - {teams[key2]}");
-                    }
-                    Console.WriteLine("");
-                    foreach (var item1 in theFirstEleven)
-                                Console.WriteLine($"{item1.Key}, golovi: {item1.Value}");
-                    break;
+                        Console.WriteLine("\nUnesi naredbu:");
+                        bool IsThis = int.TryParse(Console.ReadLine(), out command);
+                        if (!IsThis)
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Probaj opet");
+                            Console.WriteLine("");
+                            Console.WriteLine("2 - odigrati još jednu  utakmicu");
+                            Console.WriteLine("1 - vrati se na izbornik");
+                            Console.WriteLine("0 - izađi iz aplikacije ");
+
+                            Console.Write("\nUnesi naredbu opet: ");
+                            command = 17;
+                            continue;
+                        }
+                        k++;
+                        switch (command)
+                        {
+                            case 2:
+                                continue;
+
+
+                            case 1:
+                                Console.Clear();
+                                break;
+                            case 0:
+                                Console.WriteLine("Izašli ste iz aplikacije");
+                                return;
+                        }
+
+            }while (true) ;     
+
+                    
+                //  ako je k > 5
+                break;
             }
 
 
@@ -409,7 +491,7 @@ do
                         case 7:
                             Console.WriteLine("");
                             Console.WriteLine("        ~ PRVIH 11 IGRAČA ~     ");
-                            foreach (var item in theFirstEleven)
+                            foreach (var item in theFirstElevenTotal)
                                 Console.WriteLine($"{item.Key}");
                             break;
                         case 8:
