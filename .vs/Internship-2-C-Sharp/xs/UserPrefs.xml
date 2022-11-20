@@ -1,4 +1,25 @@
 ﻿<Properties StartupConfiguration="{8A280BA5-A6CB-441C-B16F-18008583CBFC}|Default">
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Internship-2-C-Sharp/Program.cs">
+    <Files>
+      <File FileName="Internship-2-C-Sharp/Program.cs" Line="343" Column="35" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Internship-2-C-Sharp" expanded="True">
+            <Node name="Internship-2-C-Sharp" expanded="True">
+              <Node name="Program.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.Internship-2-C-Sharp FirstBuild="True" />
+  <MonoDevelop.Ide.ItemProperties.Internship-2-C-Sharp PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

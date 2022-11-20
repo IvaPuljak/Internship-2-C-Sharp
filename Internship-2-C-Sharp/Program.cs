@@ -4,6 +4,7 @@ using System.Runtime.Intrinsics.X86;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Xml.Linq;
 
 var players = new Dictionary<string, (string position, int rating)>()
 {
@@ -29,21 +30,44 @@ var players = new Dictionary<string, (string position, int rating)>()
     { "Ante Budimir", ("FW", 78) }
 
 };
+var goloviRazlike = new Dictionary<string, int>()
+{
+    {"Hrvatska", 0},
+    {"Belgija", 0},
+    {"Maroko", 0},
+    {"Kanada", 0}
+
+};
 var games = new List<Dictionary<string, int>>()
 {
      new Dictionary<string, int>()
      {
-    {"Hrvatska", 0},
-    {"Belgija", 0 },
-    {"Kanada", 0 },
-    {"Maroko", 0 } },
+        {"Hrvatska", 0},
+        {"Belgija", 0 },
+        {"Kanada", 0 },
+        {"Maroko", 0 }
+     },
      new Dictionary<string, int>()
      {
-    {"Hrvatska", 0},
-    {"Kanada", 0 },
-    {"Belgija", 0 },
-    {"Maroko", 0 } }
-
+        {"Hrvatska", 0},
+        {"Kanada", 0 },
+        {"Maroko", 0 },
+        {"Belgija", 0 }
+     },
+      new Dictionary<string, int>()
+     {
+        {"Hrvatska", 0},
+        {"Maroko", 0 },
+        {"Kanada", 0 },
+        {"Belgija", 0 }
+     }
+};
+var Points = new Dictionary<string, int>()
+{
+        {"Hrvatska", 0},
+        {"Maroko", 0 },
+        {"Kanada", 0 },
+        {"Belgija", 0 }
 };
 var theFirstElevenTotal = new Dictionary<string, int>();
 int numGK = 1;
@@ -238,10 +262,11 @@ do
                     break;
                 case 2:
 
+                    
                     int k = 0;
                     Console.Clear();
                     do { 
-                        Console.WriteLine($"     ~ {k + 1}. utakmica ~   ");
+                        
                         var teams = games.ElementAt(k);
                         foreach (var item in teams)
                         {
@@ -298,13 +323,14 @@ do
 
 
                         }
-                        Console.WriteLine($"\nRezultat {k + 1}. utakmice:");
+                        Console.Clear();
+                        Console.WriteLine($"\nRezultat {k + 1}. kola:");
                         var teamsKeys = new List<string>(teams.Keys);
                         for (var i = 1; i < teams.Count(); i += 2)
                         {
                             var key1 = teamsKeys.ElementAt(i - 1);
                             var key2 = teamsKeys.ElementAt(i);
-                            Console.WriteLine($"{key1} - {key2} -> {teams[key1]} - {teams[key2]}");
+                            Console.WriteLine($"{key1} - {key2} -> {teams[key1]} : {teams[key2]}");
                             if (key1 == "Hrvatska" && teams[key1] > teams[key2])
                             {
                                 foreach (var item in players)
@@ -313,10 +339,34 @@ do
                             else if (key1 == "Hrvatska" && teams[key1] < teams[key2])
                             {
                                 foreach (var item in players)
-                                    players[item.Key] = (item.Value.position, item.Value.rating - 2);
-                            }
-                        }
 
+                                   players[item.Key] = (item.Value.position, item.Value.rating - 2);
+                            }
+                            if (teams[key1] > teams[key2])
+                            {
+                                Points[key1] += 3;
+                                
+
+                            }
+                            else if (teams[key2] > teams[key1])
+                            {
+                                Points[key2] += 3;
+                               
+
+                            }
+                            else if (teams[key1] == teams[key2])
+                            {
+                                Points[key1] += 1;
+                                Points[key2] += 1;
+                            }
+                            goloviRazlike[key1] += (teams[key1] - teams[key2]);
+                            goloviRazlike[key2] -= (teams[key1] - teams[key2]);
+
+                        }
+                      
+
+                        Console.WriteLine("");
+                        Console.WriteLine("");
                         Console.WriteLine("2 - odigrati još jednu utakmicu");
                         Console.WriteLine("1 - vrati se na izbornik");
                         Console.WriteLine("0 - izađi iz aplikacije");
@@ -336,25 +386,29 @@ do
                             command = 17;
                             continue;
                         }
-                        k++;
-                        switch (command)
+                        
+                        if(command == 2)
                         {
-                            case 2:
-                                continue;
-
-
-                            case 1:
-                                Console.Clear();
+                            k++;
+                            if (k > 2)
+                            {
+                                Console.WriteLine("\nOdigrale su se sve utakmice u našoj skupini");
                                 break;
-                            case 0:
-                                Console.WriteLine("Izašli ste iz aplikacije");
-                                return;
+                            }
+                            
+                        }
+                        if (command == 1)
+                            break;
+                        if(command == 0)
+                        {
+                            Console.WriteLine("Izašli ste iz aplikacije");
+                            return;
                         }
 
             }while (true) ;     
 
                     
-                //  ako je k > 5
+                
                 break;
             }
 
@@ -495,12 +549,135 @@ do
                                 Console.WriteLine($"{item.Key}");
                             break;
                         case 8:
+                            var GoalsOfAll = 0;
+                            Console.WriteLine("");
+                            foreach(var item in theFirstElevenTotal)
+                            {
+                                
+                                GoalsOfAll += item.Value;
+                                if(item.Value > 1 && item.Value<5)
+                                    Console.WriteLine($"{item.Key} je zabio {item.Value} gola");
+                                if(item.Value == 1)
+                                    Console.WriteLine($"{item.Key} je zabio {item.Value} gol");
+                                if(item.Value > 4)
+                                    Console.WriteLine($"{item.Key} je zabio {item.Value} golova");
+                                
+                            }
+                            if (GoalsOfAll == 0)
+                                {
+                                    Console.WriteLine("Trenutno nema strijelaca");
+                                    break;
+                                }
+                                 
+
                             break;
                         case 9:
+                            Console.Clear();
+                            Console.WriteLine("");
+                            Console.WriteLine("           ~ SVI REZULTATI NAŠE EKIPE ~");
+                            for (var i = 0; i < games.Count(); i++)
+                            {
+                                var teams = games.ElementAt(i);
+                                var teamsKeys = new List<string>(teams.Keys);
+                                
+                                    
+                                    for (var j = 1; j < teams.Count(); j++)
+                                    {
+                                        var key1 = teamsKeys.ElementAt(j - 1);
+                                        var key2 = teamsKeys.ElementAt(j);
+                                        if (key1 == "Hrvatska")
+                                        {
+                                            Console.WriteLine("");
+                                            Console.WriteLine($"{key1} - {key2} -> {teams[key1]} : {teams[key2]}");
+                                            break;
+                                        }
+                                        
+                                    }
+                              
+
+                                
+                            }
                             break;
                         case 10:
+                            Console.Clear();
+                            Console.WriteLine("");
+                            Console.WriteLine("        ~ REZULTATI SVIH EKIPA ~     ");
+                            for (var i = 0; i < games.Count(); i++)
+                            {
+                                var teams = games.ElementAt(i);
+                                var teamsKeys = new List<string>(teams.Keys);
+
+                                for (var j = 1; j < teams.Count(); j+=2)
+                                {
+                                    var key1 = teamsKeys.ElementAt(j - 1);
+                                    var key2 = teamsKeys.ElementAt(j);
+                                    
+                                    Console.WriteLine("");
+                                    Console.WriteLine($"{key1} - {key2} -> {teams[key1]} : {teams[key2]}");
+                                }
+                            }
+
                             break;
                         case 11:
+                          
+                            var table = new Dictionary<string, int>()
+                            {
+                                {"Hrvatska", 0},
+                                {"Belgija", 0},
+                                {"Maroko", 0},
+                                {"Kanada", 0}
+
+                            };
+                        
+                            for (var i = 0; i< games.Count();i++)
+                            {
+                                var teams = games.ElementAt(i);
+                                var teamsKeys = new List<string>(teams.Keys);
+                                for (var j = 1; j < teams.Count(); j += 2)
+                                {
+                                    var key1 = teamsKeys.ElementAt(j - 1);
+                                    var key2 = teamsKeys.ElementAt(j);
+                                    if(key1 == "Hrvatska")
+                                    {
+                                        table[key1] += teams[key1];
+                                    }
+                                    if (key2 == "Hrvatska")
+                                    {
+                                        table[key2] += teams[key2];
+                                    }
+                                    if (key1 == "Belgija")
+                                    {
+                                        table[key1] += teams[key1];
+                                    }
+                                    if (key2 == "Belgija")
+                                    {
+                                        table[key2] += teams[key2];
+                                    }
+                                    if (key1 == "Maroko")
+                                    {
+                                        table[key1] += teams[key1];
+                                    }
+                                    if (key2 == "Maroko")
+                                    {
+                                        table[key2] += teams[key2];
+                                    }
+                                    if (key1 == "Kanada")
+                                    {
+                                        table[key1] += teams[key1];
+                                    }
+                                    if (key2 == "Kanada")
+                                    {
+                                        table[key2] += teams[key2];
+                                    }
+                                }
+                            }
+
+                            foreach(var item in table.OrderByDescending(Key => Key.Value))
+                            {
+
+                                Console.WriteLine($"{item.Key} -- BROJ BODOVA: {Points[item.Key]} -- GOLOVI RAZLIKE: {goloviRazlike[item.Key]}");
+                            }
+
                             break;
 
                     }
@@ -619,23 +796,32 @@ do
                 case 2:
                     Console.Clear();
                     Console.WriteLine("      ~ BRISANJE IGRAČA ~     ");
-
-                    Console.WriteLine("Koliko igrača želiš izbrisati: ");
-                    var delete = int.Parse(Console.ReadLine());
-                    int br1 = 0;
-                    Console.WriteLine("");
-                    do
-                    {
+                    
+                        Console.WriteLine("Koliko igrača želiš izbrisati: ");
+                        var delete = int.Parse(Console.ReadLine());
+                        
+                        int br1 = 0;
                         Console.WriteLine("");
-                        Console.WriteLine("Unesi ime i prezime igrača:");
-                        Console.WriteLine("");
-                        string name = Console.ReadLine();
+                        do
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Unesi ime i prezime igrača:");
+                            Console.WriteLine("");
+                            string name = Console.ReadLine();
+                            if(players.ContainsKey(name) == false)
+                            {
+                                Console.WriteLine("\nTaj igrač nije u ekipi");
+                                Console.WriteLine("Probaj opet:");
+                                continue;
+                            }
+                            players.Remove(name);
 
-                        players.Remove(name);
+                            br1++;
 
-                        br1++;
-
-                    } while (br1 != delete);
+                        } while (br1 != delete);
+                    Console.WriteLine("Uspješno izbrisan");
+                        break;
+                    
                     break;
 
                 case 3:
@@ -651,36 +837,79 @@ do
                         case 1:
                             Console.Clear();
                             Console.WriteLine("     ~ UREDI IME I PREZIME IGRAČA ~     ");
-                            Console.WriteLine("Unesi ime i prezime igrača kojeg želiš urediti: ");
-                            string name = Console.ReadLine();
-                            Console.WriteLine("");
-                            Console.WriteLine("Uredi:");
-                            string nameNew = Console.ReadLine();
-                            players[nameNew] = players[name];
-                            players.Remove(name);
-                            Console.WriteLine("");
+                            do
+                            {
+                                Console.WriteLine("Unesi ime i prezime igrača kojeg želiš urediti: ");
+                                string name1 = Console.ReadLine();
+                                if (players.ContainsKey(name1) == false)
+                                {
+                                    Console.WriteLine("");
+                                    Console.WriteLine("Taj igrač nije u ekipi");
+                                    Console.WriteLine("\nProbaj opet:");
+                                    continue;
+
+                                }
+                                Console.WriteLine("");
+                                Console.WriteLine("Uredi:");
+                                string nameNew = Console.ReadLine();
+                                players[nameNew] = players[name1];
+                                players.Remove(name1);
+                                Console.WriteLine("");
+                                break;
+                            } while (true);
                             Console.WriteLine("Uspiješno uređen");
                             break;
                         case 2:
                             Console.Clear();
                             Console.WriteLine("      ~ UREDI POZICIJU IGRAČA ~    ");
-                            Console.WriteLine("Unesi ime i prezime igrača kojeg želiš urediti: ");
-                            name = Console.ReadLine();
-                            Console.WriteLine("");
-                            Console.WriteLine("Uredi poziciju tog igrača:");
-                            string positionChanged = Console.ReadLine();
-                            foreach(var item in players)
+                            do
                             {
-                                players[name] = (positionChanged, item.Value.rating);
-                            }
+                                Console.WriteLine("Unesi ime i prezime igrača kojeg želiš urediti: ");
+                                string name = Console.ReadLine();
+                                if (players.ContainsKey(name) == false)
+                                {
+                                    Console.WriteLine("");
+                                    Console.WriteLine("Taj igrač nije u ekipi");
+                                    Console.WriteLine("\nProbaj opet:");
+                                    continue;
 
+                                }
+                                Console.WriteLine("");
+                                Console.WriteLine("Uredi poziciju tog igrača:");
+                                string positionChanged = Console.ReadLine();
+
+                                if((Equals(positionChanged, "DF") && Equals(positionChanged, "MF") && Equals(positionChanged, "FW") && Equals(positionChanged, "GK"))== false)
+                                {
+                                    Console.WriteLine("");
+                                    Console.WriteLine("Taj pozicija ne postoji");
+                                    Console.WriteLine("\nProbaj opet:");
+                                    continue;
+
+                                }
+                                foreach (var item in players)
+                                {
+                                    players[name] = (positionChanged, item.Value.rating);
+                                }
+
+                                break;
+
+                            } while (true);
+                            Console.WriteLine("Uspjesno uređen");
                             break;
 
                         case 3:
                             Console.Clear();
                             Console.WriteLine("     ~ UREDI RATING IGRAČA ~    ");
                             Console.WriteLine("Unesi ime i prezime igrača kojeg želiš urediti: ");
-                            name = Console.ReadLine();
+                            string name2 = Console.ReadLine();
+                            if (players.ContainsKey(name2) == false)
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine("Taj igrač nije u ekipi");
+                                Console.WriteLine("\nProbaj opet:");
+                                continue;
+
+                            }
                             Console.WriteLine("");
                             int ratingChanged;
                             do
@@ -690,7 +919,7 @@ do
                             } while (!(ratingChanged >= 1 && ratingChanged <=100));
                             foreach (var item in players)
                             {
-                                players[name] = (item.Value.position, ratingChanged);
+                                players[name2] = (item.Value.position, ratingChanged);
                             }
 
                             break;
